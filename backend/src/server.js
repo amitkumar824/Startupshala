@@ -1,11 +1,10 @@
-require('dotenv').config();
+require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 const cors = require('cors');
 const express = require('express');
 const app = express();
 const router = require('./routes/authroutes');
 const dealRouter = require('./routes/dealroutes');
 const claimRouter = require('./routes/claimroutes');
-const adminRouter = require('./routes/adminRoutes');
 const connectDB = require('./utils/db');
 
 app.use(
@@ -17,10 +16,6 @@ app.use(
 
 //middleware
 app.use(express.json());
-
-// for admin routes
-app.use("/api/admin", adminRouter);
-// for deal routes
 app.use("/api/deals", dealRouter);
 app.use("/api/claims", claimRouter);
 

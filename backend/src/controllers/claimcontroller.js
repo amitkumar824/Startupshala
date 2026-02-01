@@ -19,7 +19,7 @@ const claimDeal = async (req, res) => {
 
 // for duplicate claims
     const existingClaim = await Claim.findOne({
-      userId: user._id,
+      userId: user.userId,
       dealId,
     });
 
@@ -30,7 +30,7 @@ const claimDeal = async (req, res) => {
     }
 
     const claim = await Claim.create({
-      userId: user._id,
+      userId: user.userId,
       dealId,
       status: "pending",
     });
@@ -46,10 +46,10 @@ const claimDeal = async (req, res) => {
 
 const getMyClaims = async (req, res) => {
   try {
-    const claims = await Claim.find({ userId: req.user._id })
+    const claims = await Claim.find({ userId: req.user.userId })
       .populate("dealId");
 
-    res.status(200).json(claims);
+    res.status(200).json({ data: claims });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -45,7 +45,7 @@ export default function DashboardPage() {
     return null;
   }
 
-  const claimedDeals = claims.map((claim) => ({
+  const claimedDeals = (claims || []).map((claim) => ({
     claim,
     deal: mockDeals.find((d) => d.id === claim.dealId),
   }));
@@ -129,7 +129,7 @@ export default function DashboardPage() {
                 <Sparkles className="w-5 h-5 text-purple-600" />
               </div>
               <div className="text-3xl font-bold text-purple-600">
-                {claims.length}
+                {claims?.length || 0}
               </div>
             </CardContent>
           </Card>

@@ -9,7 +9,7 @@ const connectDB = require('./utils/db');
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "https://startupshalafrontend.vercel.app"],
     credentials: true,
   })
 );

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -21,9 +20,14 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (user) {
-      router.push('/dashboard');
+      if (user.isAdmin) {
+        router.push('/admin'); // admin dashboard
+      } else {
+        router.push('/dashboard'); // regular user dashboard
+      }
     }
   }, [user, router]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,32 +39,42 @@ export default function LoginPage() {
     }
 
     try {
-      await login(email, password);
-      router.push('/dashboard');
-    } catch (err) {
-      setError('Login failed. Please try again.');
+      const res = await login(email, password); // login from AppContext
+      if (res.user.isAdmin) {
+
+        router.push('/admin');
+
+      } 
+      else
+         {
+        router.push('/dashboard');
+      }
+
+    } catch (err: any) {
+      setError(err.message || 'Login failed. Please try again.');
     }
   };
 
-  if (user) {
-    return null;
-  }
+  if (user) return null;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-blue-900/20 px-4">
+      {/* Floating background circles */}
       <div className="absolute inset-0 overflow-hidden opacity-30">
         {[...Array(10)].map((_, i) => (
           <div
             key={i}
             className="absolute rounded-full bg-white/20 dark:bg-white/10 animate-float"
-            style={{
+            style={
+              {
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
               width: `${Math.random() * 100 + 50}px`,
               height: `${Math.random() * 100 + 50}px`,
               animationDelay: `${Math.random() * 5}s`,
               animationDuration: `${Math.random() * 10 + 10}s`,
-            }}
+            }
+          }
           />
         ))}
       </div>
@@ -73,18 +87,17 @@ export default function LoginPage() {
             </div>
             <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               StartupDeals
+
             </span>
           </Link>
           <h1 className="text-4xl font-bold mb-2">Welcome Back</h1>
-          <p className="text-muted-foreground">Sign in to access exclusive deals</p>
+          <p className="text-muted-foreground">Sign in to access your account</p>
         </div>
 
         <Card className="shadow-2xl border-2 animate-slide-up">
           <CardHeader>
             <CardTitle>Sign In</CardTitle>
-            <CardDescription>
-              Enter your credentials to continue
-            </CardDescription>
+            <CardDescription>Enter your credentials to continue</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -108,9 +121,6 @@ export default function LoginPage() {
                     required
                   />
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Tip: Use &ldquo;verified@example.com&rdquo; for a verified account
-                </p>
               </div>
 
               <div className="space-y-2">
@@ -155,60 +165,29 @@ export default function LoginPage() {
 
         <div className="mt-6 text-center text-sm text-muted-foreground">
           <Link href="/" className="hover:text-foreground transition-colors">
-            ← Back to Home
+            Back to Home
           </Link>
         </div>
       </div>
 
       <style jsx>{`
         @keyframes float {
-          0%, 100% {
-            transform: translateY(0) translateX(0);
-          }
-          25% {
-            transform: translateY(-20px) translateX(10px);
-          }
-          50% {
-            transform: translateY(-10px) translateX(-10px);
-          }
-          75% {
-            transform: translateY(-30px) translateX(5px);
-          }
+          0%, 100% { transform: translateY(0) translateX(0); }
+          25% { transform: translateY(-20px) translateX(10px); }
+          50% { transform: translateY(-10px) translateX(-10px); }
+          75% { transform: translateY(-30px) translateX(5px); }
         }
-
         @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(-20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(-20px); }
+          to { opacity: 1; transform: translateY(0); }
         }
-
         @keyframes slide-up {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(30px); }
+          to { opacity: 1; transform: translateY(0); }
         }
-
-        .animate-float {
-          animation: float ease-in-out infinite;
-        }
-
-        .animate-fade-in {
-          animation: fade-in 0.6s ease-out;
-        }
-
-        .animate-slide-up {
-          animation: slide-up 0.8s ease-out;
-        }
+        .animate-float { animation: float ease-in-out infinite; }
+        .animate-fade-in { animation: fade-in 0.6s ease-out; }
+        .animate-slide-up { animation: slide-up 0.8s ease-out; }
       `}</style>
     </div>
   );
